@@ -12,7 +12,7 @@ export default function BlockchainSelector() {
 
     const handleSubmit = () => {
         if(selectedBlockchain) {
-            navigate(`/${selectedBlockchain.name.toLowerCase()}`, )
+            navigate(`/${selectedBlockchain.name.toLowerCase()}`)
         }
     }
 
