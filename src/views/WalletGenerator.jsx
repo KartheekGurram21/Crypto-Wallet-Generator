@@ -1,11 +1,15 @@
 import { useState, useContext } from "react";
 import { ThemeContext } from "../context/ThemeContext";
+import { BlockchainContext } from "../context/BlockchainContext";
 import { generateMnemonic, validateSeedPhrase } from "../utils/mnemonics";
+import { useNavigate } from "react-router-dom";
 
 export default function WalletGenerator() {
   const { darkMode } = useContext(ThemeContext);
+  const { selectedBlockchain } = useContext(BlockchainContext);
   const [seedPhrase, setSeedPhrase] = useState("");
   const [errors, setErrors] = useState({});
+  const navigate = useNavigate();
 
   const bgClass = darkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900";
   const cardBg = darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-300";
@@ -37,7 +41,9 @@ export default function WalletGenerator() {
     const validationErrors = runValidation(seedPhrase);
 
     if (Object.keys(validationErrors).length === 0) {
-      alert("Wallet imported with seed phrase:\n" + seedPhrase);
+      navigate(`/${selectedBlockchain.name.toLowerCase()}/wallets`, {
+        state: {seedPhrase}
+      });
     }
   }
 

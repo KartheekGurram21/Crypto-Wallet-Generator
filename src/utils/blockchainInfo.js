@@ -6,7 +6,7 @@ export const blockchains = [
     description: 'The original cryptocurrency',
     color: 'bg-orange-500',
     icon: '₿',
-    derivationPath: "m/44'/0'/0'/0"      
+    derivationPathCode: 0     
   },
   {
     id: 'ethereum',
@@ -15,7 +15,7 @@ export const blockchains = [
     description: 'Smart contract platform',
     color: 'bg-blue-600',
     icon: 'Ξ',
-    derivationPath: "m/44'/60'/0'/0" 
+    derivationPathCode: 60
   },
   {
     id: 'base',
@@ -24,7 +24,7 @@ export const blockchains = [
     description: 'Coinbase L2 scaling solution',
     color: 'bg-blue-500',
     icon: 'B',
-    derivationPath: "m/44'/60'/0'/0" 
+    derivationPathCode: 60
   },
   {
     id: 'polygon',
@@ -33,7 +33,7 @@ export const blockchains = [
     description: 'Ethereum scaling solution',
     color: 'bg-purple-600',
     icon: '⬟',
-    derivationPath: "m/44'/60'/0'/0"
+    derivationPathCode: 60
   },
   {
     id: 'solana',
@@ -42,7 +42,7 @@ export const blockchains = [
     description: 'High-performance blockchain',
     color: 'bg-gradient-to-r from-purple-400 to-purple-600',
     icon: '◎',
-    derivationPath: "m/44'/501'/0'/0" 
+    derivationPathCode: 501 
   },
   {
     id: 'sui',
@@ -51,6 +51,6 @@ export const blockchains = [
     description: 'Next-gen smart contract platform',
     color: 'bg-cyan-500',
     icon: 'S',
-    derivationPath: "m/44'/784'/0'/0"   
+    derivationPathCode: 784
   }
 ];
