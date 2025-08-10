@@ -1,15 +1,20 @@
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import { blockchains } from '../utils/blockchainInfo';
 import { ThemeContext } from '../context/ThemeContext';
+import { useNavigate } from 'react-router-dom';
+import { BlockchainContext } from '../context/BlockchainContext';
 
 export default function BlockchainSelector() {
 
     const { darkMode } = useContext(ThemeContext);
-    const [selectedBlockchain, setSelectedBlockChain] = useState();
+    const { selectedBlockchain, handleBlockchain } = useContext(BlockchainContext);
+    const navigate = useNavigate();
 
-    const handleSelect = (value) => {
-        setSelectedBlockChain(value.id);
-    };
+    const handleSubmit = () => {
+        if(selectedBlockchain) {
+            navigate(`/${selectedBlockchain.name.toLowerCase()}`, )
+        }
+    }
 
     return (
         <div
@@ -37,7 +42,7 @@ export default function BlockchainSelector() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {blockchains.map((blockchain) => {
-                    const isSelected = selectedBlockchain === blockchain.id;
+                    const isSelected = selectedBlockchain && selectedBlockchain.id === blockchain.id;
                     return (
                     <div
                         key={blockchain.id}
@@ -52,7 +57,7 @@ export default function BlockchainSelector() {
                             ? 'border-gray-700 hover:border-gray-600'
                             : 'border-gray-200 hover:border-gray-300'
                         }`}
-                        onClick={() => handleSelect(blockchain)}
+                        onClick={() => handleBlockchain(blockchain)}
                     >
                         <div className="p-6">
                         {/* Icon */}
@@ -101,7 +106,7 @@ export default function BlockchainSelector() {
                             }`}
                             onClick={(e) => {
                                 e.stopPropagation();
-                                handleSelect(blockchain);
+                                handleBlockchain(blockchain);
                             }}
                             >
                             {isSelected ? 'Selected' : 'Select'}
@@ -141,9 +146,9 @@ export default function BlockchainSelector() {
                         ? 'bg-blue-500 hover:bg-blue-400 text-white'
                         : 'bg-blue-600 hover:bg-blue-700 text-white'
                     }`}
+                    onClick={handleSubmit}
                     >
-                    Continue with{' '}
-                    {blockchains.find((b) => b.id === selectedBlockchain)?.name}
+                    Continue with{' '+selectedBlockchain.name}
                     </button>
                 </div>
                 )}
