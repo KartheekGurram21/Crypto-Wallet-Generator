@@ -1,7 +1,7 @@
 import { ToggleSwitch } from "./ToggleSwitch";
 import { Moon, Sun } from "lucide-react";
 
-export function Header({ darkMode, onToggleDarkMode }) {
+export default function Header({ darkMode, onToggleDarkMode }) {
     return (
 
         <header className={`${darkMode ? "bg-black text-white border-gray-800" : "bg-white text-gray-900 border-gray-200"} w-full px-4 sm:px-6 lg:px-8 py-4 border-b`}>

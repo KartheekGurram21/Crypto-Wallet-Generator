@@ -1,6 +1,6 @@
 import { useContext } from "react";
-import { Header } from "./components/Header"
 import { ThemeContext } from "./context/ThemeContext";
+import Layout from "./components/Layout";
 
 
 export default function App() {
@@ -8,7 +8,7 @@ export default function App() {
 
   return (
     <>
-      <Header darkMode={darkMode} onToggleDarkMode={toggleDarkMode}/>
+      <Layout darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
     </>
   )
 }
