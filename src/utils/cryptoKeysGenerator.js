@@ -14,22 +14,16 @@ export function generateKeyPairs(mnemonics, id, blockchainName) {
 
         const slip = blockchain.derivationPathCode;
         const seed = bip39.mnemonicToSeedSync(mnemonics);
+        const root = bip32.fromSeed(seed, bitcoin.networks.bitcoin);
 
         if (slip === 0) { // Bitcoin
-            const root = bip32.fromSeed(seed, bitcoin.networks.bitcoin);
-            const path = `m/84'/${slip}'/${id}'/0/0`; // 84' for bech32 (P2WPKH)
+            const path = `m/44'/${slip}'/${id}'/0/0`;
             const child = root.derivePath(path);
 
-            const { address } = bitcoin.payments.p2wpkh({
-                pubkey: Buffer.from(child.publicKey),
-                network: bitcoin.networks.bitcoin,
-            });
-
             return {
-                address, // bc1... Bech32 format
-                publicKey: address,// Base58 encoding of raw pubkey
-                privateKey: bs58.encode(child.privateKey), // Base58 encoding of raw privkey
-                wif: child.toWIF(), // standard Bitcoin WIF
+                publicKey: bs58.encode(child.publicKey),
+                privateKey: bs58.encode(child.privateKey),
+                wif: child.toWIF()
             };
         }
 
