@@ -1,16 +1,18 @@
 import { useContext, useState } from "react";
 import { ThemeContext } from "../context/ThemeContext";
 import { BlockchainContext } from "../context/BlockchainContext";
+import { generateKeyPairs } from "../utils/cryptoKeysGenerator";
 import { useLocation } from "react-router-dom";
 import { FiTrash2, FiPlus } from "react-icons/fi";
 
 export default function WalletDisplayer() {
+  let counter = 1;
   const location = useLocation();
   const { seedPhrase } = location.state || {};
   const words = seedPhrase ? seedPhrase.split(" ") : [];
 
   const { darkMode } = useContext(ThemeContext);
-  const { selectedBlockChain } = useContext(BlockchainContext);
+  const { selectedBlockchain } = useContext(BlockchainContext);
 
   const [visible, setVisible] = useState(true);
   const [copied, setCopied] = useState(false);
@@ -31,11 +33,9 @@ export default function WalletDisplayer() {
 
   // Add new wallet
   const handleAddWallet = () => {
-    const newWallet = {
-      publicKey: "PUB_KEY_" + (wallets.length + 1),
-      privateKey: "PRIV_KEY_" + (wallets.length + 1),
-    };
-    setWallets([...wallets, newWallet]);
+    const {publicKey, privateKey} = generateKeyPairs(seedPhrase, counter, selectedBlockchain.name);
+    setWallets([...wallets, {publicKey, privateKey}]);
+    counter++;
   };
 
   // Delete specific wallet
@@ -64,7 +64,7 @@ export default function WalletDisplayer() {
         {/* Header */}
         <div className="flex justify-between items-center mb-3">
           <h2 className="text-xl font-bold">
-            {selectedBlockChain?.name || "Wallet"} Mnemonics
+            {selectedBlockchain?.name || "Wallet"} Mnemonics
           </h2>
           <button
             onClick={() => setVisible(!visible)}
@@ -122,7 +122,7 @@ export default function WalletDisplayer() {
         {/* Wallet Controls */}
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold">
-            {selectedBlockChain?.name || "Wallet"} Keys
+            {selectedBlockchain?.name || "Wallet"} Keys
           </h2>
           <div className="flex gap-2">
             <button
