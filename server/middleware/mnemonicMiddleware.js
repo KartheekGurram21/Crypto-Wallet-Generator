@@ -16,3 +16,7 @@ const mnemonicMiddleware = (req, res, next) => {
         });
     }
 } 
+
+module.exports = {
+    mnemonicMiddleware
+};
