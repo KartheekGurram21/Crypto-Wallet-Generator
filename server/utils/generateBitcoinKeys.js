@@ -25,6 +25,4 @@ async function generateBitcoinKeys(mnemonics, accountIndex) {
     };
 }
 
-generateBitcoinKeys("ceiling idea camera radio able people crane trade fiscal uncover kick special", 0);
-
 module.exports = { generateBitcoinKeys };

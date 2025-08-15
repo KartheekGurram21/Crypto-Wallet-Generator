@@ -4,7 +4,6 @@ const { validateSeedPhrase } = require("../utils/validateMnemonics");
 const generateMnemonicController = async (req, res) => {
     try {
         const mnemonics = generateMnemonic();
-        console.log(mnemonics);
         res.status(200).json({
             message: "mnemonic generated successfully",
             data: mnemonics
@@ -19,7 +18,6 @@ const generateMnemonicController = async (req, res) => {
 
 const validateMnemonics = async (req, res) => {
     try {
-        console.log(req.body)
         const { mnemonics } = req.body;
         const result = validateSeedPhrase(mnemonics);
         if(result.status) {

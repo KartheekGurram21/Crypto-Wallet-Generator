@@ -1,10 +1,11 @@
 const express = require("express");
 const cors = require("cors");
+require("dotenv").config();
 const blockchainRoutes = require("./routes/blockchainRoutes");
 const mnemonicRoutes = require("./routes/mnemonicRoutes");
 const { mnemonicMiddleware } = require("./middleware/mnemonicMiddleware");
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 const app = express();
 

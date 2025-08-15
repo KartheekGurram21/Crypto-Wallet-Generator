@@ -2,7 +2,6 @@ const bip39 = require("bip39");
 const ed25519 = require("ed25519-hd-key");
 const { Keypair } = require("@solana/web3.js");
 const bs58 = require("bs58");
-const { address } = require("bitcoinjs-lib");
 
 async function generateSolanaKeys(mnemonics, accountIndex) {
     const seed = await bip39.mnemonicToSeed(mnemonics);
