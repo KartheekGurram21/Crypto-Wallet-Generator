@@ -10,7 +10,10 @@ function validateSeedPhrase(phrase) {
     newErrors.seedPhrase = "Invalid seed phrase";
   }
 
-  return newErrors;
+  return {
+    errors: newErrors,
+    status: Object.keys(newErrors).length > 0 ? true : false
+  };
 }
 
 

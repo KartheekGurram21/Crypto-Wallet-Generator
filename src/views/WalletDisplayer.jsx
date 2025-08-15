@@ -1,213 +1,151 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect, useRef } from "react";
 import { ThemeContext } from "../context/ThemeContext";
-import { BlockchainContext } from "../context/BlockchainContext";
-import { generateKeyPairs } from "../utils/cryptoKeysGenerator";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { FiTrash2, FiPlus } from "react-icons/fi";
+import axios from "axios";
+import MnemonicDisplayer from "../components/MnemonicDisplayer";
+import WalletCard from "../components/WalletCard";
 
 export default function WalletDisplayer() {
-  let counter = 1;
-  const location = useLocation();
-  const { seedPhrase } = location.state || {};
-  const words = seedPhrase ? seedPhrase.split(" ") : [];
+    const navigate = useNavigate();
+    const location = useLocation();
+    const { seedPhrase } = location.state || {};
+    const blockchain = location.pathname.split("/")[1];
+    const { darkMode } = useContext(ThemeContext);
 
-  const { darkMode } = useContext(ThemeContext);
-  const { selectedBlockchain } = useContext(BlockchainContext);
+    const [wallets, setWallets] = useState(() => {
+        const saved = localStorage.getItem("wallets");
+        return saved ? JSON.parse(saved) : [];
+    });
+    const [counter, setCounter] = useState(() => Number(localStorage.getItem("counter")) || 0);
+    const hasFetched = useRef(false);
+    const [loading, setLoading] = useState(false);
 
-  const [visible, setVisible] = useState(true);
-  const [copied, setCopied] = useState(false);
+    useEffect(() => {
+        localStorage.setItem("wallets", JSON.stringify(wallets));
+    }, [wallets]);
 
-  // Multiple wallet state
-  const [wallets, setWallets] = useState([
-    { publicKey: "PUB_KEY_1", privateKey: "PRIV_KEY_1" },
-  ]);
+    useEffect(() => {
+        if (!seedPhrase) {
+            navigate("/");
+            return;
+        }
 
-  const handleCopy = (e) => {
-    if (e.target.closest("button")) return;
-    if (visible) {
-      navigator.clipboard.writeText(seedPhrase);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    }
-  };
+        if (!hasFetched.current) {
+            hasFetched.current = true;
+            if (wallets.length === 0) {
+                (async () => {
+                    try {
+                        setLoading(true);
+                        const res = await axios.post(`http://localhost:3001/api/blockchains/${blockchain}`,
+                            { 
+                                mnemonics: seedPhrase, 
+                                accountIndex: counter 
+                            }
+                        );
+                        setWallets([res.data.data]);
+                        setCounter((p) => p + 1);
+                    } catch (e) {
+                        console.error("Error creating first wallet:", e);
+                    } finally {
+                        setLoading(false);
+                    }
+                })();
+            }
+        }
+    }, [seedPhrase, blockchain, navigate]); 
 
-  // Add new wallet
-  const handleAddWallet = () => {
-    const {publicKey, privateKey} = generateKeyPairs(seedPhrase, counter, selectedBlockchain.name);
-    setWallets([...wallets, {publicKey, privateKey}]);
-    counter++;
-  };
 
-  // Delete specific wallet
-  const handleDeleteWallet = (index) => {
-    setWallets(wallets.filter((_, i) => i !== index));
-  };
+    const handleAddWallet = async () => {
+        try {
+            setLoading(true);
+            const res = await axios.post(`http://localhost:3001/api/blockchains/${blockchain}`,
+                { 
+                    mnemonics: seedPhrase, 
+                    accountIndex: counter 
+                }
+            );
+            setWallets((prev) => [...prev, res.data.data]);
+            setCounter((p) => p + 1);
+        } catch (e) {
+            console.error("Error adding wallet:", e);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-  // Delete all wallets
-  const handleDeleteAll = () => {
-    setWallets([]);
-  };
+    const handleDeleteWallet = (index) => {
+        setWallets((prev) => prev.filter((_, i) => i !== index));
+    };
 
-  return (
-    <div
-      className={`w-full min-h-screen flex flex-col items-center px-4 py-8 space-y-6 ${
-        darkMode ? "bg-gray-900" : "bg-gray-100"
-      }`}
-    >
-      {/* Mnemonics Section */}
-      <div
-        className={`w-full sm:w-3/4 p-6 rounded-xl shadow-lg transition-all duration-300 ${
-          darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"
-        }`}
-        onClick={handleCopy}
-      >
-        {/* Header */}
-        <div className="flex justify-between items-center mb-3">
-          <h2 className="text-xl font-bold">
-            {selectedBlockchain?.name || "Wallet"} Mnemonics
-          </h2>
-          <button
-            onClick={() => setVisible(!visible)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-300 ${
-              darkMode
-                ? "bg-gray-700 hover:bg-gray-600"
-                : "bg-gray-200 hover:bg-gray-300"
-            }`}
-          >
-            {visible ? "Hide" : "Show"}
-          </button>
-        </div>
+    const handleDeleteAll = () => {
+        setWallets([]);
+        localStorage.removeItem("wallets");
+    };
 
-        {/* Copy Notification */}
-        {copied && (
-          <div className="mb-2 text-green-400 text-sm font-medium animate-fade-in-out">
-            ✅ Mnemonics copied to clipboard!
-          </div>
-        )}
-
-        {/* Mnemonics Grid */}
+    return (
         <div
-          className={`cursor-pointer select-none grid grid-cols-3 sm:grid-cols-4 gap-3 w-full overflow-hidden transition-all duration-500 ease-in-out ${
-            visible ? "max-h-[500px] opacity-100 mt-2" : "max-h-0 opacity-0 mt-0"
-          }`}
+            className={`w-full min-h-screen flex flex-col items-center px-4 py-8 space-y-6 ${
+            darkMode ? "bg-gray-900" : "bg-gray-100"
+            }`}
         >
-          {words.map((word, index) => (
-            <div
-              key={index}
-              className={`flex items-center justify-center p-3 rounded-lg border text-base font-medium transition-colors ${
-                darkMode
-                  ? "bg-gray-700 border-gray-600 hover:bg-gray-600"
-                  : "bg-gray-50 border-gray-300 hover:bg-gray-200"
-              }`}
-            >
-              {index + 1}. {word}
+
+            {loading && (
+            <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
+                <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
             </div>
-          ))}
-        </div>
+            )}
 
-        {/* Copy Hint */}
-        {visible && (
-          <p className="text-xs text-center text-gray-400 mt-3">
-            💡 Click anywhere on the mnemonics to copy them
-          </p>
-        )}
-      </div>
+            <MnemonicDisplayer seedPhrase={seedPhrase} blockchain={blockchain} darkMode={darkMode} />
 
-      {/* Wallets Container */}
-      <div
-        className={`w-full sm:w-3/4 p-6 rounded-xl shadow-lg transition-all duration-300 ${
-          darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"
-        }`}
-      >
-        {/* Wallet Controls */}
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">
-            {selectedBlockchain?.name || "Wallet"} Keys
-          </h2>
-          <div className="flex gap-2">
-            <button
-              onClick={handleAddWallet}
-              className={`flex items-center gap-1 px-3 py-1 rounded-lg text-sm font-medium transition-colors duration-300 ${
-                darkMode
-                  ? "bg-green-700 hover:bg-green-600"
-                  : "bg-green-200 hover:bg-green-300"
-              }`}
-            >
-              <FiPlus /> Add Wallet
-            </button>
-            <button
-              onClick={handleDeleteAll}
-              className={`flex items-center gap-1 px-3 py-1 rounded-lg text-sm font-medium transition-colors duration-300 ${
-                darkMode
-                  ? "bg-red-700 hover:bg-red-600"
-                  : "bg-red-200 hover:bg-red-300"
-              }`}
-            >
-              <FiTrash2 /> Delete All
-            </button>
-          </div>
-        </div>
-
-        {/* Wallet Cards */}
-        <div className="grid sm:grid-cols-2 gap-4">
-          {wallets.map((wallet, index) => (
             <div
-              key={index}
-              className={`relative p-4 rounded-lg border text-sm break-all ${
-                darkMode
-                  ? "bg-gray-700 border-gray-600"
-                  : "bg-gray-50 border-gray-300"
-              }`}
+            className={`w-full sm:w-3/4 p-6 rounded-xl shadow-lg ${
+                darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"
+            }`}
             >
-              {/* Delete Icon */}
-              <button
-                onClick={() => handleDeleteWallet(index)}
-                className="absolute top-2 right-2 text-red-400 hover:text-red-600"
-              >
-                <FiTrash2 />
-              </button>
+                <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-xl font-bold">{blockchain || "Wallet"} Keys</h2>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={handleAddWallet}
+                                disabled={loading}
+                                className={`flex items-center gap-1 px-3 py-1 rounded-lg text-sm ${
+                                darkMode
+                                    ? "bg-green-700 hover:bg-green-600 disabled:opacity-50"
+                                    : "bg-green-200 hover:bg-green-300 disabled:opacity-50"
+                                }`}
+                            >
+                                <FiPlus /> Add Wallet
+                            </button>
+                            <button
+                                onClick={handleDeleteAll}
+                                className={`flex items-center gap-1 px-3 py-1 rounded-lg text-sm ${
+                                darkMode ? "bg-red-700 hover:bg-red-600" : "bg-red-200 hover:bg-red-300"
+                                }`}
+                            >
+                                <FiTrash2 /> Delete All
+                            </button>
+                        </div>
+                </div>
 
-              {/* Public Key */}
-              <div
-                className={`mb-2 ${
-                  darkMode ? "text-green-300" : "text-green-700"
-                }`}
-              >
-                <span className="font-bold">Public Key:</span> {wallet.publicKey}
-              </div>
+                <div className="grid sm:grid-cols-2 gap-4">
+                    {wallets.map((wallet, index) => (
+                        <WalletCard
+                            key={index}
+                            wallet={wallet}
+                            index={index}
+                            darkMode={darkMode}
+                            onDelete={handleDeleteWallet}
+                        />
+                    ))}
 
-              {/* Private Key */}
-              <div
-                className={`${
-                  darkMode ? "text-red-300" : "text-red-700"
-                }`}
-              >
-                <span className="font-bold">Private Key:</span>{" "}
-                {wallet.privateKey}
-              </div>
+                    {wallets.length === 0 && (
+                        <p className="text-center text-gray-400 col-span-full">
+                            No wallets yet. Click "Add Wallet".
+                        </p>
+                    )}
+                </div>
             </div>
-          ))}
-
-          {wallets.length === 0 && (
-            <p className="text-center text-gray-400 col-span-full">
-              No wallets available. Click "Add Wallet" to create one.
-            </p>
-          )}
         </div>
-      </div>
-
-      {/* Animation Styles */}
-      <style>
-        {`
-          @keyframes fadeInOut {
-            0%, 100% { opacity: 0; transform: translateY(-10px); }
-            10%, 90% { opacity: 1; transform: translateY(0); }
-          }
-          .animate-fade-in-out {
-            animation: fadeInOut 1.5s ease-in-out;
-          }
-        `}
-      </style>
-    </div>
-  );
+    );
 }

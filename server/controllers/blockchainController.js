@@ -6,7 +6,7 @@ const { generateSuiKeys } = require("../utils/generateSuiKeys");
 const bitcoinController = async (req, res) => {
     try {
         const { mnemonics, accountIndex } = req.body;
-        const result = generateBitcoinKeys(mnemonics, accountIndex);
+        const result = await generateBitcoinKeys(mnemonics, accountIndex);
         res.status(200).json({
             message: "generated bitcoin keys successfully",
             data: result
@@ -21,7 +21,7 @@ const bitcoinController = async (req, res) => {
 const ethereumController = async (req, res) => {
    try {
         const { mnemonics, accountIndex } = req.body;
-        const result = generateEthereumKeys(mnemonics, accountIndex);
+        const result = await generateEthereumKeys(mnemonics, accountIndex);
         res.status(200).json({
             message: "generated bitcoin keys successfully",
             data: result
@@ -36,7 +36,7 @@ const ethereumController = async (req, res) => {
 const solanaController = async (req, res) => {
    try {
         const { mnemonics, accountIndex } = req.body;
-        const result = generateSolanaKeys(mnemonics, accountIndex);
+        const result = await generateSolanaKeys(mnemonics, accountIndex);
         res.status(200).json({
             message: "generated bitcoin keys successfully",
             data: result
@@ -51,7 +51,7 @@ const solanaController = async (req, res) => {
 const suiController = async (req, res) => {
    try {
         const { mnemonics, accountIndex } = req.body;
-        const result = generateSuiKeys(mnemonics, accountIndex);
+        const result = await generateSuiKeys(mnemonics, accountIndex);
         res.status(200).json({
             message: "generated bitcoin keys successfully",
             data: result

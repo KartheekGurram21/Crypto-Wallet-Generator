@@ -2,11 +2,11 @@ const router = require("express").Router();
 const { bitcoinController, ethereumController, suiController, solanaController } = require("../controllers/blockchainController");
 
 
-router.get("/bitcoin", bitcoinController);
-router.get("/ethereum", ethereumController);
-router.get("/solana", solanaController);
-router.get("/sui", suiController);
-router.get("/base", ethereumController);
-router.get("/polygon", ethereumController);
+router.post("/bitcoin", bitcoinController);
+router.post("/ethereum", ethereumController);
+router.post("/solana", solanaController);
+router.post("/sui", suiController);
+router.post("/base", ethereumController);
+router.post("/polygon", ethereumController);
 
 module.exports = router;

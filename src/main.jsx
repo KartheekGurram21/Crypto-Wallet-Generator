@@ -1,22 +1,16 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom'
-import './styles/index.css'
-import App from './App.jsx'
-import { ThemeProvider } from './context/ThemeContext.jsx'
-import { BlockchainProvider } from './context/BlockchainContext.jsx'
-import { Buffer } from 'buffer';
-
-window.Buffer = Buffer;
+import './styles/index.css';
+import App from './App.jsx';
+import { ThemeProvider } from './context/ThemeContext.jsx';
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <ThemeProvider>
-      <BlockchainProvider>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </BlockchainProvider>
-    </ThemeProvider>
-  </StrictMode>,
-)
+    <StrictMode>
+        <ThemeProvider>
+                <BrowserRouter>
+                    <App />
+                </BrowserRouter>
+        </ThemeProvider>
+    </StrictMode>,
+);

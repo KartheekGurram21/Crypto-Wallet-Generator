@@ -1,5 +1,5 @@
-import { useContext } from "react";
 import { ThemeContext } from "../context/ThemeContext";
+import { useContext } from "react";
 
 export default function Footer() {
   const { darkMode } = useContext(ThemeContext);
@@ -13,14 +13,10 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto">
         <div className="text-center space-y-2">
           <p className={`${darkMode ? "text-gray-300" : "text-gray-600"} text-sm`}>
-            CryptoWallet Generator - Secure, Fast, and Reliable
+            CryptoWallet Generator - developed by <a href="https://www.linkedin.com/in/kartheek-gurram-71a5aa258/" target="blank">Kartheek Gurram</a>
           </p>
           <p className={`${darkMode ? "text-gray-400" : "text-gray-500"} text-xs`}>
-            Generate secure cryptocurrency wallets with industry-standard encryption.
-            Keep your private keys safe and never share them with anyone.
-          </p>
-          <p className={`${darkMode ? "text-gray-400" : "text-gray-400"} text-xs`}>
-            © 2024 CryptoWallet Generator. All rights reserved.
+            This application is just a representation of how HDWALLETS work
           </p>
         </div>
       </div>
