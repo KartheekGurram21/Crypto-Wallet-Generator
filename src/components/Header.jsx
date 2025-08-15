@@ -2,9 +2,11 @@ import { useContext } from "react";
 import { ToggleSwitch } from "./ToggleSwitch";
 import { Moon, Sun } from "lucide-react";
 import { ThemeContext } from "../context/ThemeContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Header() {
     const { darkMode } = useContext(ThemeContext);
+    const navigate = useNavigate();
 
     return (
         <header
@@ -16,7 +18,7 @@ export default function Header() {
             } w-full px-4 sm:px-6 lg:px-8 py-4 border-b`}
         >
             <div className="max-w-7xl mx-auto flex items-center justify-between">
-                <div className="flex items-center">
+                <div className="flex items-center cursor-pointer" onClick={() => navigate("/")}>
                     <h1 className="text-xl sm:text-2xl font-bold">CryptoWallet Generator</h1>
                 </div>
                 <div className="flex items-center space-x-3">
